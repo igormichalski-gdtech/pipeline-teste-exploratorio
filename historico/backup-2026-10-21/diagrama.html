@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Pipeline de teste exploratório</title>
+<style>
+:root { --ink:#1d2125; --mut:#59616a; --line:#d5dadf; --code:#1f4f8f; --codebg:#eaf1fb; --ui:#a24a07; --uibg:#fdf1e4; --ok:#1f6b52; --okbg:#e9f4ef; }
+* { box-sizing: border-box; }
+body { margin:0; background:#fff; color:var(--ink); font:15px/1.45 "Helvetica Neue", Helvetica, Arial, sans-serif; }
+.wrap { width:1600px; padding:44px 52px 36px; }
+.kick { color:var(--ok); font-size:12px; font-weight:700; letter-spacing:.16em; }
+h1 { font-size:34px; margin:6px 0 4px; }
+.sub { color:var(--mut); font-size:16px; margin:0 0 26px; max-width:1100px; }
+.zones { display:grid; grid-template-columns: 2fr 2fr 2fr; gap:0; margin-bottom:10px; font-size:13px; font-weight:700; letter-spacing:.04em; }
+.zones div { padding:7px 14px; border-radius:6px 6px 0 0; }
+.z-code { background:var(--codebg); color:var(--code); }
+.z-ui { background:var(--uibg); color:var(--ui); }
+.flow { display:grid; grid-template-columns: repeat(6, 1fr); gap:22px; position:relative; }
+.st { border:1.5px solid var(--line); border-radius:10px; padding:16px 15px 14px; background:#fff; position:relative; min-height:330px; display:flex; flex-direction:column; }
+.st.code { border-top:6px solid var(--code); }
+.st.ui { border-top:6px solid var(--ui); }
+.st:not(:last-child)::after { content:"→"; position:absolute; right:-21px; top:120px; font-size:24px; color:#9aa3ac; }
+.n { font-size:12px; font-weight:700; color:var(--mut); letter-spacing:.08em; }
+.st h2 { font-size:20px; margin:2px 0 6px; }
+.who { font-size:12.5px; font-weight:700; margin-bottom:10px; }
+.code .who { color:var(--code); } .ui .who { color:var(--ui); }
+.st ul { margin:0 0 10px; padding-left:17px; font-size:13.5px; color:#2d3338; }
+.st li { margin-bottom:4px; }
+.out { margin-top:auto; font-size:12.5px; background:#f5f6f7; border-radius:6px; padding:7px 9px; color:var(--mut); }
+.out b { color:var(--ink); }
+.loop { margin:14px 0 0; border:1.5px dashed #b9c0c7; border-radius:10px; padding:10px 16px; font-size:14px; color:var(--mut); display:flex; gap:10px; align-items:center; }
+.loop b { color:var(--ink); }
+.bottom { display:grid; grid-template-columns: 1.25fr 1fr 1fr; gap:22px; margin-top:22px; }
+.box { border-radius:10px; padding:14px 16px; font-size:13.5px; }
+.box h3 { margin:0 0 8px; font-size:15px; }
+.why { background:#f5f6f7; }
+.why li, .persona li { margin-bottom:4px; }
+.why ul, .persona ul { margin:0; padding-left:17px; }
+.persona { background:var(--uibg); }
+.res { background:var(--okbg); }
+.res .big { font-size:30px; font-weight:700; color:var(--ok); line-height:1.1; }
+.res .row { display:flex; gap:22px; margin-bottom:8px; }
+.res small { display:block; color:var(--mut); font-size:12px; }
+.foot { margin-top:16px; font-size:12px; color:#8a939c; }
+</style></head><body><div class="wrap">
+<div class="kick">QUALIDADE · TESTE EXPLORATÓRIO COM AGENTES</div>
+<h1>Como funciona o pipeline de teste exploratório</h1>
+<p class="sub">Agentes de IA usam o sistema como usuários comuns, com personas de baixa, média e alta habilidade, sem acesso ao código. Cada problema encontrado é reproduzido por outro agente antes de virar achado, e só então o código é consultado para apontar a causa.</p>
+
+<div class="zones"><div class="z-code">PODE LER O CÓDIGO</div><div class="z-ui">SÓ A TELA, COMO UM USUÁRIO</div><div class="z-code">PODE LER O CÓDIGO</div></div>
+<div class="flow">
+  <div class="st code"><div class="n">1 · UMA VEZ POR PRODUTO</div><h2>Preparar</h2><div class="who">Agente preparador · Opus</div>
+    <ul><li>Lê README, docker e seed</li><li>Sobe o sistema local com banco e portas próprios</li><li>Desliga serviços externos (pagamento, WhatsApp, e-mail)</li><li>Cria um usuário por persona</li><li>Descreve os módulos em linguagem de usuário</li></ul>
+    <div class="out">Gera <b>config.md</b> e <b>mapa do produto</b></div></div>
+  <div class="st code"><div class="n">2 · CADA EXECUÇÃO</div><h2>Planejar</h2><div class="who">Orquestrador · Opus</div>
+    <ul><li>Escolhe personas × missões</li><li>Missões dizem <i>o quê</i>, nunca <i>como</i>: "crie uma campanha para o Instagram da clínica"</li><li>Dados do jeito que as pessoas digitam: sem https, telefone com espaço</li><li>Não conta bugs conhecidos</li></ul>
+    <div class="out">Gera <b>plano.md</b></div></div>
+  <div class="st ui"><div class="n">3 · EM PARALELO</div><h2>Explorar</h2><div class="who">Agentes-persona · Sonnet ou Haiku</div>
+    <ul><li>Só ferramentas de navegador: nada de código, DevTools ou API</li><li>Segue o cartão: o que sabe e o que não sabe, paciência, dispositivo</li><li>Digita tecla a tecla e tira print de cada tela</li><li>Desistir é resultado válido</li></ul>
+    <div class="out">Gera <b>achados brutos</b> com prints</div></div>
+  <div class="st ui"><div class="n">4 · CORTA FALSO POSITIVO</div><h2>Verificar</h2><div class="who">Agente verificador · Sonnet</div>
+    <ul><li>Refaz o passo a passo de cada achado duas vezes</li><li>Espera a tela carregar antes de concluir</li><li>Anota erros de console e rede</li></ul>
+    <div class="out"><b>Confirmado</b> · intermitente · <b>descartado</b></div></div>
+  <div class="st code"><div class="n">5 · TRIAGEM</div><h2>Triar</h2><div class="who">Orquestrador · Opus</div>
+    <ul><li>Junta achados iguais entre personas</li><li>Acha a causa no código (<i>arquivo:linha</i>)</li><li>Tipo: bug, regra ruim, texto, layout ou falta de recurso</li><li>Severidade alta, média ou baixa</li><li>Compara com o histórico: novo, recorrente ou corrigido</li></ul>
+    <div class="out">Gera a <b>lista final</b></div></div>
+  <div class="st code"><div class="n">6 · ENTREGA</div><h2>Relatar</h2><div class="who">Orquestrador</div>
+    <ul><li>Relatório só com bugs, cada um com o print logo abaixo</li><li>Tabela de missões com quem concluiu e quem desistiu</li><li>Consumo de tokens e custo por agente</li><li>Limpa os dados de teste</li></ul>
+    <div class="out">Gera <b>relatorio.pdf</b> e <b>historico.md</b></div></div>
+</div>
+<div class="loop">↻ <span><b>A próxima execução</b> parte do histórico: prioriza o que mudou no git e os achados abertos, e marca o que foi corrigido.</span></div>
+
+<div class="bottom">
+  <div class="box why"><h3>Por que é desenhado assim</h3><ul>
+    <li><b>Sem código para a persona:</b> se pedimos apenas "aja como leigo", a IA continua agindo como especialista. Com limites reais, ela tropeça onde o usuário tropeça.</li>
+    <li><b>Verificação separada:</b> agentes de navegador acusam bugs que não existem quando a tela demora a carregar.</li>
+    <li><b>Missões com dados reais:</b> é assim que aparece o erro que ninguém testou, como o "www.site.com" recusado.</li>
+    <li><b>Não substitui gente:</b> encontra candidatos a problema de forma barata e repetível; a confirmação final é com usuários reais.</li></ul></div>
+  <div class="box persona"><h3>As personas (base: GenderMag + OCDE)</h3><ul>
+    <li><b>Carla</b>, vendedora, nível 1, celular. Lê tudo, culpa a si mesma e desiste após 2 tentativas.</li>
+    <li><b>Rogério</b>, gestor, nível 2, notebook. Lê só títulos e desiste após 3 tentativas.</li>
+    <li><b>Bruno</b>, administrador, nível 3, desktop. Fuça, culpa o sistema e testa os limites.</li>
+    <li>Só 5% dos adultos estão no nível de quem desenvolve o sistema.</li></ul></div>
+  <div class="box res"><h3>1ª execução no Dealto (19/10/2026)</h3>
+    <div class="row"><div><div class="big">20</div><small>achados (1 alto · 11 médios · 8 baixos)</small></div><div><div class="big">≈ US$ 18</div><small>no total · ≈ US$ 0,90 por achado</small></div></div>
+    <div>Encontrou os 3 problemas da conferência manual: https:// obrigatório, tarefa sem duração e o To cobrindo botões.</div>
+    <div style="margin-top:6px">Haiku custou 7× menos que Sonnet na mesma persona.</div></div>
+</div>
+<div class="foot">Uso: abrir o Claude Code no repositório do sistema e rodar /teste-exploratorio · skill em ~/.claude/skills/teste-exploratorio · agentes exploratorio-preparador, exploratorio-persona e exploratorio-verificador</div>
+</div></body></html>
