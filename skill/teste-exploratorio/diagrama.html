@@ -1,49 +1,58 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><title>Pipeline de teste exploratório</title>
 <style>
-:root { --ink:#1b1f24; --mut:#6b737c; --line:#e3e6ea; --code:#2b5ea7; --ui:#c0612b; }
-* { box-sizing:border-box; }
-body { margin:0; background:#fff; color:var(--ink); font:16px/1.4 "Helvetica Neue", Helvetica, Arial, sans-serif; }
-.wrap { width:1600px; padding:56px 64px 48px; background:#fff; }
-h1 { font-size:32px; font-weight:700; margin:0 0 8px; letter-spacing:-.01em; }
-.sub { color:var(--mut); font-size:17px; margin:0 0 44px; }
-.zones { display:grid; grid-template-columns:2fr 2fr 2fr; gap:28px; margin-bottom:14px; font-size:12px; font-weight:700; letter-spacing:.12em; }
-.zones div { padding-bottom:8px; border-bottom:2px solid; }
-.zc { color:var(--code); border-color:var(--code); }
-.zu { color:var(--ui); border-color:var(--ui); }
-.flow { display:grid; grid-template-columns:repeat(6,1fr); gap:28px; }
-.st { position:relative; padding:22px 0 0; }
-.st:not(:last-child)::after { content:""; position:absolute; top:41px; left:52px; right:-28px; height:1px; background:var(--line); }
-.n { width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:16px; color:#fff; position:relative; z-index:1; }
-.code .n { background:var(--code); }
-.ui .n { background:var(--ui); }
-h2 { font-size:21px; margin:18px 0 6px; }
-.d { color:var(--ink); font-size:15px; margin:0 0 10px; min-height:42px; }
-.who { color:var(--mut); font-size:13px; }
-.extra { margin-top:12px; display:inline-block; font-size:12px; color:var(--mut); border:1px solid var(--line); border-radius:999px; padding:3px 10px; }
-.out { margin-top:48px; display:flex; align-items:center; gap:14px; font-size:15px; color:var(--mut); }
-.tag { font-weight:700; font-size:13px; letter-spacing:.06em; padding:5px 12px; border-radius:6px; }
-.b { background:#fbe9e7; color:#b3261e; } .q { background:#fff4dc; color:#8a5a00; }
-.s { background:#e8f0fb; color:#2b5ea7; } .r { background:#f0f1f3; color:#5f666d; }
-.foot { margin-top:28px; padding-top:18px; border-top:1px solid var(--line); display:flex; justify-content:space-between; color:var(--mut); font-size:14px; }
+body { margin:0; background:#fff; }
+.wrap { width:1600px; background:#fff; }
+svg { display:block; font-family:"Helvetica Neue", Helvetica, Arial, sans-serif; }
+.t { font-size:15px; font-weight:600; letter-spacing:.14em; fill:#9aa1a9; }
+.name { font-size:22px; font-weight:700; fill:#1b1f24; text-anchor:middle; }
+.cap { font-size:15px; fill:#7a828b; text-anchor:middle; }
+.num { font-size:18px; font-weight:700; text-anchor:middle; dominant-baseline:central; }
+.leg { font-size:13px; fill:#9aa1a9; }
+.loop { font-size:13px; fill:#9aa1a9; text-anchor:middle; font-style:italic; }
 </style></head><body><div class="wrap">
-<h1>Pipeline de teste exploratório</h1>
-<p class="sub">Personas de IA usam o sistema como pessoas comuns, sem ver o código. Cada achado é reproduzido antes de virar bug.</p>
+<svg width="1600" height="440" viewBox="0 0 1600 440" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,1 L9,5 L0,9" fill="none" stroke="#b8bfc6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
 
-<div class="zones"><div class="zc">LÊ O CÓDIGO</div><div class="zu">SÓ A TELA</div><div class="zc">LÊ O CÓDIGO</div></div>
+  <text class="t" x="100" y="70">PIPELINE DE TESTE EXPLORATÓRIO</text>
 
-<div class="flow">
-  <div class="st code"><div class="n">1</div><h2>Preparar</h2><p class="d">Mapeia o ambiente de dev e o que só roda local</p><div class="who">Preparador</div></div>
-  <div class="st code"><div class="n">2</div><h2>Planejar</h2><p class="d">Personas, missões e contas de cada papel</p><div class="who">Orquestrador</div></div>
-  <div class="st ui"><div class="n">3</div><h2>Explorar</h2><p class="d">Cada persona cumpre missões do dia a dia</p><div class="who">Personas</div><div class="extra">+ varredura de layout, sem IA</div></div>
-  <div class="st ui"><div class="n">4</div><h2>Verificar</h2><p class="d">Reproduz sem saber a conclusão</p><div class="who">Verificador</div></div>
-  <div class="st code"><div class="n">5</div><h2>Triar</h2><p class="d">Compara com a spec, bugs conhecidos e decisões</p><div class="who">Orquestrador</div></div>
-  <div class="st code"><div class="n">6</div><h2>Relatar</h2><p class="d">Relatório, histórico e limpeza dos dados</p><div class="who">Orquestrador</div></div>
-</div>
+  <!-- volta: a próxima execução aprende com as decisões -->
+  <path d="M1460,190 C1460,120 1380,118 800,118 C220,118 140,120 140,190" fill="none" stroke="#d6dbe0" stroke-width="1.5" stroke-dasharray="5 6" marker-end="url(#a)"/>
+  <text class="loop" x="800" y="108">a próxima execução aprende com as decisões</text>
 
-<div class="out">Cada achado termina em
-  <span class="tag b">BUG</span><span class="tag q">DÚVIDA</span><span class="tag s">SUGESTÃO</span><span class="tag r">RETIRADO</span>
-</div>
+  <!-- setas entre etapas -->
+  <g stroke="#b8bfc6" stroke-width="1.6" marker-end="url(#a)">
+    <line x1="182" y1="230" x2="362" y2="230"/>
+    <line x1="446" y1="230" x2="626" y2="230"/>
+    <line x1="710" y1="230" x2="890" y2="230"/>
+    <line x1="974" y1="230" x2="1154" y2="230"/>
+    <line x1="1238" y1="230" x2="1418" y2="230"/>
+  </g>
 
-<div class="foot"><span>Roda em dev · local só para o que é impossível em dev · nunca produção</span><span>As respostas às dúvidas voltam para a triagem da próxima execução</span></div>
+  <!-- pontos -->
+  <g>
+    <circle cx="140"  cy="230" r="30" fill="#eaf1fb"/><text class="num" x="140"  y="230" fill="#2b5ea7">1</text>
+    <circle cx="404"  cy="230" r="30" fill="#eaf1fb"/><text class="num" x="404"  y="230" fill="#2b5ea7">2</text>
+    <circle cx="668"  cy="230" r="30" fill="#fcefe6"/><text class="num" x="668"  y="230" fill="#c0612b">3</text>
+    <circle cx="932"  cy="230" r="30" fill="#fcefe6"/><text class="num" x="932"  y="230" fill="#c0612b">4</text>
+    <circle cx="1196" cy="230" r="30" fill="#eaf1fb"/><text class="num" x="1196" y="230" fill="#2b5ea7">5</text>
+    <circle cx="1460" cy="230" r="30" fill="#eaf1fb"/><text class="num" x="1460" y="230" fill="#2b5ea7">6</text>
+  </g>
+
+  <!-- nomes e legendas -->
+  <text class="name" x="140"  y="305">Preparar</text><text class="cap" x="140"  y="332">mapeia o ambiente</text>
+  <text class="name" x="404"  y="305">Planejar</text><text class="cap" x="404"  y="332">personas e missões</text>
+  <text class="name" x="668"  y="305">Explorar</text><text class="cap" x="668"  y="332">usa só a tela</text>
+  <text class="name" x="932"  y="305">Verificar</text><text class="cap" x="932"  y="332">reproduz o achado</text>
+  <text class="name" x="1196" y="305">Triar</text><text class="cap" x="1196" y="332">bug, dúvida ou sugestão</text>
+  <text class="name" x="1460" y="305">Relatar</text><text class="cap" x="1460" y="332">relatório e limpeza</text>
+
+  <!-- legenda -->
+  <circle cx="106" cy="396" r="6" fill="#2b5ea7"/><text class="leg" x="120" y="400">lê o código</text>
+  <circle cx="226" cy="396" r="6" fill="#c0612b"/><text class="leg" x="240" y="400">só a tela, como um usuário</text>
+</svg>
 </div></body></html>
