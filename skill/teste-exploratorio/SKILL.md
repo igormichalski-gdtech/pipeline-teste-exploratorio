@@ -1,6 +1,6 @@
 ---
 name: teste-exploratorio
-description: Roda testes exploratórios com personas de usuários comuns no sistema do repositório atual. Prepara e sobe o ambiente local, solta agentes-persona que usam só a interface (sem ler código), verifica cada achado reproduzindo-o também do jeito comum, faz a triagem contra a especificação e os bugs conhecidos e entrega um relatório que separa BUG, DÚVIDA, SUGESTÃO e RETIRADO. Use quando pedirem "teste exploratório", "testar como usuário", "rodar as personas" ou /teste-exploratorio.
+description: Roda testes exploratórios com personas de usuários comuns no sistema do repositório atual. Roda no ambiente de dev do produto (local só para o que é impossível em dev), solta agentes-persona que usam só a interface (sem ler código), verifica cada achado reproduzindo-o também do jeito comum, faz a triagem contra a especificação e os bugs conhecidos e entrega um relatório que separa BUG, DÚVIDA, SUGESTÃO e RETIRADO. Use quando pedirem "teste exploratório", "testar como usuário", "rodar as personas" ou /teste-exploratorio.
 argument-hint: "[preparar | rodar | relatorio] [modulo=...] [personas=...] [modo=economico|padrao]"
 ---
 
@@ -46,6 +46,27 @@ Estado do produto fica no repositório, em `.exploratorio/`:
     plano.md  prompts/  achados-<persona>.md  verificacao.md  layout/  relatorio.md  evidencias/  bruto/
 ```
 
+## Onde roda: dev primeiro, local só para o que é impossível em dev
+
+**Padrão: o ambiente de dev do produto** (host com rótulo de teste, ex. `dev.`, `staging.`, `qa.`).
+**Local é reserva**, só para as missões que dependem de algo da lista "Só no local" do `config.md`
+(ex.: falha simulada de propósito, injetar evento sem remetente real, zerar estado, recurso
+desligado em dev). **Nunca produção.** Argumento `alvo=local` força tudo no local.
+
+Regras de dev (decisão do dono, 25/11/2026):
+- **Contas:** não ficam guardadas. Na etapa 2, depois de escolher as personas, liste ao usuário
+  **só os papéis que o plano usa** e peça e-mail e senha de cada um (no chat ou no arquivo
+  `.exploratorio/ambiente/contas-dev.env`, que fica no `.gitignore`). Não crie contas em dev por
+  conta própria. Papel sem conta fornecida: as missões dele saem do plano.
+- **Escrita liberada só dentro do workspace/empresa de teste** que o usuário indicar, com prefixo
+  `EXPL-`. Nada fora dele. Dados preparados e limpeza pela interface ou pela API com essas contas;
+  o que a API não deixa apagar fica listado no relatório.
+- **Integrações reais de teste** (ex. número de WhatsApp de teste): só os números/contas listados
+  no `config.md`. Eventos que precisam de remetente real (cliente mandando mensagem) são pedidos ao
+  usuário na etapa 2, com o texto exato, ou vêm de dados já existentes; o que não der vira missão local.
+- **Limites de dev:** horário em que o ambiente fica no ar, rate limit compartilhado com outras
+  suítes e o commit publicado (para a triagem ler o código certo) ficam no `config.md`.
+
 Argumentos: `preparar` força a etapa 1 de novo; `rodar` pula direto para a etapa 2 (exige `config.md`);
 `relatorio` só refaz a etapa 6 da última execução. Sem argumento: etapas 1 (se faltar config) a 6.
 `modo=economico` usa Haiku nas personas. **Nunca comece uma execução (etapa 3) sem o usuário pedir.**
@@ -61,7 +82,9 @@ papéis, bugs conhecidos dos testes automatizados).
 Ao voltar, confira e mostre ao usuário em poucas linhas: como sobe, URL, usuários, o que está
 **indisponível**, os **recursos simulados** (com o parâmetro de realismo), os **valores de teste
 conhecidos** e a lista de dados prometidos com a marca ✓ de validação. Peça confirmação antes da
-primeira execução se algo toca fora da máquina. Nunca rode contra produção.
+primeira execução se algo toca fora da máquina. Nunca rode contra produção. O preparador monta os
+dois perfis: **dev** (URL, workspace de teste, integrações de teste, limites, lista "Só no local") e
+**local** (subir/derrubar, simuladores), só se houver item na lista "Só no local".
 
 Depois, com base em `mapa-do-produto.md`, na matriz de papéis e em `personas.md` desta skill, escreva
 `.exploratorio/personas.md` e `.exploratorio/missoes.md` seguindo `missoes-e-tours.md`. Toda missão
@@ -70,9 +93,14 @@ do agente? o dado existe?) antes de entrar no arquivo.
 
 ## Etapa 2 · Subir o ambiente e planejar a execução
 
-1. Suba o ambiente com os comandos de `config.md` e rode o health check. Se falhar, chame o preparador.
-2. Rode a **checagem de dados prometidos** do `config.md` (o preparador deixou o comando). Missão que
-   depende de dado que não passou fica fora do plano.
+1. Marque cada missão como **dev** ou **local** (local só se depender de item "Só no local").
+   Dev: confira se o ambiente está no ar e no horário, anote o commit publicado e peça ao usuário as
+   contas dos papéis usados (e os eventos com remetente real, se houver). Com as contas, regenere as
+   sessões salvas (`ambiente/estado-<papel>.json`) contra dev. Local: suba só se alguma missão for
+   local, com os comandos de `config.md`. Se o health check falhar, chame o preparador.
+2. Rode a **checagem de dados prometidos** do `config.md` (o preparador deixou o comando; em dev,
+   pela API ou pela tela dentro do workspace de teste; o que falta é criado com prefixo `EXPL-`).
+   Missão que depende de dado que não passou fica fora do plano.
 3. Escreva `execucoes/<id>/plano.md` com:
    - a matriz persona × missões (máx. ~6 missões + 1 tour por sessão);
    - a **matriz de cobertura tela × sessão**: toda tela do escopo no `mapa-do-produto.md` precisa de
@@ -82,7 +110,8 @@ do agente? o dado existe?) antes de entrar no arquivo.
      ou dado sensível, com a sessão que passa nele com o catálogo de dados ruins. Nenhum fica de fora;
    - as **liberações por sessão**: se o ambiente é simulado (pagamento de teste, e-mail local), a
      sessão recebe a liberação explícita ("neste ambiente você pode confirmar pagamento e envio de
-     e-mail"); sem isso, missões que pagam ou enviam algo para fora não entram;
+     e-mail"); sem isso, missões que pagam ou enviam algo para fora não entram. Em dev, a liberação
+     diz o limite: "aqui você pode mandar mensagens só para os clientes de teste que aparecem";
    - o `--max-turns` de cada sessão (padrão 150; sessão com tour de dados ruins: 120);
    - os dados únicos de cada sessão (e-mails, CPF/CNPJ diferentes por persona).
 4. Mostre o plano ao usuário em poucas linhas e espere ele mandar rodar.
@@ -162,7 +191,9 @@ Siga `triagem.md` à risca, achado por achado, na ordem da árvore. Em resumo:
 5. **Aprendizado:** quando o usuário (ou o dev/PO) responder às DÚVIDAS ou revisar o relatório,
    registre cada decisão em `conhecimento/decisoes.md` (data, commit, achado, decisão, quem, motivo).
    A triagem da próxima execução aplica essas decisões sozinha.
-6. Limpe os dados `EXPL-` pelo comando do `config.md` e derrube o ambiente se o `config.md` mandar.
+6. Limpe os dados `EXPL-` pelo comando do `config.md` (em dev, só no workspace de teste; liste o que
+   não pôde ser apagado) e derrube o ambiente local se ele foi usado. Apague `ambiente/contas-dev.env`
+   e as sessões de dev salvas, a menos que o usuário peça para manter.
 7. Responda ao usuário em até 12 linhas: bugs por severidade, dúvidas abertas, nº de sugestões e
    retirados, telas não visitadas, custo total e caminho do relatório.
 

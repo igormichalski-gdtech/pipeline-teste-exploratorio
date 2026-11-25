@@ -54,6 +54,9 @@ simulado e indicar uma conta descartável `EXPL-VERIF`.
 indicados no prompt. Se não houver dado descartável para o item, não execute a ação final: descreva
 até o ponto anterior e marque "não executado (destrutivo, sem dado descartável)".
 
+**Ambiente de dev compartilhado:** crie e altere só dentro do workspace de teste indicado no prompt,
+com prefixo `EXPL-VERIF`. Mensagens e envios só para os contatos/números de teste que o prompt lista.
+
 Use apenas dados com o prefixo recebido; não apague nada que não tenha sido criado no teste.
 
 Resposta final, um bloco por item:
