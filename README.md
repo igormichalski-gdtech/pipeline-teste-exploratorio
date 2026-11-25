@@ -5,10 +5,7 @@ sem acesso ao código. Os achados são verificados e passam por uma triagem que 
 os bugs conhecidos e as decisões humanas anteriores. O relatório separa **BUG**, **DÚVIDA**,
 **SUGESTÃO** e **RETIRADO**.
 
-![Pipeline](docs/diagrama-v1.png)
-
-> O diagrama mostra a versão 1. A versão 2 acrescentou a base de conhecimento, a varredura de layout,
-> o verificador cego e a triagem em quatro destinos (ver `docs/analise-pipeline-teste-exploratorio-v2.md`).
+![Pipeline](docs/diagrama.png)
 
 ## Instalar
 
